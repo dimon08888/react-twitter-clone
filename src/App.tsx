@@ -1,58 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import React from 'react'
+import { Route, Routes } from 'react-router-dom'
+import './App.css'
+import Layout from './components/layout'
+import Index from './pages'
+import Bookmarks from './pages/bookmarks'
+import Home from './pages/home'
+import Login from './pages/login'
+import NotFound from './pages/not-found'
+import Profile from './pages/profile'
+import Signup from './pages/signup'
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+    <div>
+      <Routes>
+        <Route path='/' element={<Index />} />
+        <Route path='/signup' element={<Signup />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/' element={<Layout />}>
+          <Route path='home' element={<Home />} />
+          <Route path='profile' element={<Profile />} />
+          <Route path='bookmarks' element={<Bookmarks />} />
+        </Route>
+        <Route path='*' element={<NotFound />} />
+      </Routes>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
