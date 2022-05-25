@@ -1,7 +1,9 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
+import { useDocumentTitle } from '../app/utils'
 
 export default function NotFound() {
+  useDocumentTitle('Not found')
   const { pathname } = useLocation()
   return (
     <div>

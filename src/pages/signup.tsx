@@ -1,22 +1,19 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
+import { useDocumentTitle } from '../app/utils'
+// A custom hook is a function that has uses react useState() hook, accepts arguments, does something with them and returns something.
+
 export default function Signup() {
+  useDocumentTitle('Sign up')
   const usernameRef = useRef<HTMLInputElement>(null)
   const emailRef = useRef<HTMLInputElement>(null)
   const passwordRef = useRef<HTMLInputElement>(null)
   const passwordRepeatRef = useRef<HTMLInputElement>(null)
 
-  // function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-  //   e.preventDefault()
-  //   const { username, email, password, passwordRepeat } = (e.target as any).elements
-  //   console.log({
-  //     username: username.value,
-  //     email: email.value,
-  //     password: password.value,
-  //     passwordRepeat: passwordRepeat.value,
-  //   })
-  // }
+  useEffect(() => {
+    document.title = 'Sign up'
+  }, [])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()

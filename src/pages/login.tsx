@@ -1,7 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useDocumentTitle } from '../app/utils'
 
 export default function Login() {
+  useDocumentTitle('Log in')
   return (
     <form>
       <div>
