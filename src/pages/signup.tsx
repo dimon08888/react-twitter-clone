@@ -1,12 +1,12 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import { useRef, useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from 'react'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { useDocumentTitle } from '../app/utils'
-// A custom hook is a function that has uses react useState() hook, accepts arguments, does something with them and returns something.
+import { useUser } from '../providers/user-provider'
 
 export default function Signup() {
   useDocumentTitle('Sign up')
+  const { user } = useUser()
+
   const navigate = useNavigate()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -28,6 +28,14 @@ export default function Signup() {
           navigate('/login')
         }
       })
+  }
+
+  if (user === undefined) {
+    return null
+  }
+
+  if (user !== null) {
+    return <Navigate to='/home' />
   }
 
   return (

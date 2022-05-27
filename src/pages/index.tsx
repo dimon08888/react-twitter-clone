@@ -1,19 +1,19 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useDocumentTitle } from '../app/utils'
+import { useUser } from '../providers/user-provider'
 
 export default function Index() {
   useDocumentTitle('Social Network')
+  const { user } = useUser()
 
-  // fetch('http://localhost:5000/login', {
-  //   method: 'POST',
-  //   body: JSON.stringify({ username: 'john', password: 'doe' }),
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  // })
-  //   .then(response => response.json())
-  //   .then(data => console.log(data))
+  if (user === undefined) {
+    return null
+  }
+
+  if (user !== null) {
+    return <Navigate to='/home' />
+  }
 
   return (
     <div>

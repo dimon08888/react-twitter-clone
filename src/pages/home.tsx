@@ -1,21 +1,32 @@
 import React from 'react'
+import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useDocumentTitle } from '../app/utils'
-import { useEffect } from 'react'
+import { useUser } from '../providers/user-provider'
 
 export default function Home() {
   useDocumentTitle('Home')
+  const { user } = useUser()
+  const { pathname } = useLocation()
 
-  useEffect(() => {
-    const accessToken = window.localStorage.getItem('accessToken')
+  if (user === undefined) {
+    return null
+  }
 
-    fetch('http://localhost:5000/tweets', {
-      headers: {
-        Authorization: 'Bearer ' + accessToken,
-      },
-    })
-      .then(response => response.json())
-      .then(console.log)
-  })
+  if (user === null) {
+    return <Navigate to={`/login?next=${pathname}`} />
+  }
 
-  return <div>Home</div>
+  // useEffect(() => {
+  //   const accessToken = window.localStorage.getItem('accessToken')
+
+  //   fetch('http://localhost:5000/tweets', {
+  //     headers: {
+  //       Authorization: 'Bearer ' + accessToken,
+  //     },
+  //   })
+  //     .then(response => response.json())
+  //     .then(console.log)
+  // })
+
+  return <div>Home for {user.username}</div>
 }

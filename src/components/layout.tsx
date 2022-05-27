@@ -1,11 +1,14 @@
 import React from 'react'
-import { Outlet, Link, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { useUser } from '../providers/user-provider'
 
 export default function Layout() {
   const navigate = useNavigate()
+  const { setUser } = useUser()
 
   function handleLogout() {
     window.localStorage.removeItem('accessToken')
+    setUser(null)
     navigate('/login')
   }
 

@@ -1,18 +1,18 @@
-import { PrismaClient } from '@prisma/client'
 import express from 'express'
 import cors from 'cors'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import invariant from 'tiny-invariant'
+import prisma from './utils/db'
+import auth from './middleware/auth'
 
-const prisma = new PrismaClient()
+const JWT_SECRET = process.env.JWT_SECRET
+invariant(JWT_SECRET, 'JWT_SECRET environment variable must be set.')
+
 const app = express()
 
 app.use(cors())
 app.use(express.json())
-
-const JWT_SECRET = process.env.JWT_SECRET
-invariant(JWT_SECRET, 'JWT_SECRET environment variable must be set.')
 
 app.post('/signup', async (req, res) => {
   const { username, password } = req.body
@@ -45,8 +45,9 @@ app.post('/login', async (req, res) => {
       .send({ message: 'No active account found with the given credentials.' })
   }
 
+  const { password: _, ...userWithoutPassword } = user
   const token = jwt.sign({ id: user.id }, JWT_SECRET)
-  return res.json({ accessToken: token })
+  return res.json({ accessToken: token, user: userWithoutPassword })
 })
 
 const tweets = [
@@ -54,61 +55,20 @@ const tweets = [
   { id: 2, text: 'Tweet 2' },
 ]
 
-// [METHOD] /path ? dfdf=ddvdf
-// HEADERS
-// Content-Type applicatoin/json
-// Content-Length 86
-// Authorization Bearer 2390490238jkldvsklds
-// BODY
+app.get('/tweets', auth, (req, res) => {
+  res.json(tweets)
+})
 
-app.get('/tweets', (req, res) => {
-  const authHeader = req.headers.authorization
+app.get('/users/:id', auth, async (req, res) => {
+  const { id } = req.params
+  const userData = await prisma.user.findUnique({ where: { id: Number(id) } })
 
-  if (authHeader === undefined) {
-    return res
-      .status(401)
-      .setHeader('WWW-Authenticate', 'Bearer')
-      .send({ message: 'No authentication credentials provided.' })
+  if (userData === null) {
+    return res.status(404).send({ message: 'User does not exist.' })
   }
 
-  if (!authHeader.startsWith('Bearer ')) {
-    return res
-      .status(401)
-      .setHeader('WWW-Authenticate', 'Bearer')
-      .send({ message: 'No authentication credentials provided.' })
-  }
-
-  const token = authHeader.slice(7)
-
-  jwt.verify(token, JWT_SECRET, async (err, payload) => {
-    if (err) {
-      return res
-        .status(401)
-        .setHeader('WWW-Authenticate', 'Bearer')
-        .send({ message: 'Invalid token.' })
-    }
-
-    if (typeof payload === 'undefined' || typeof payload === 'string') {
-      return res
-        .status(401)
-        .setHeader('WWW-Authenticate', 'Bearer')
-        .send({ message: 'Invalid token.' })
-    }
-
-    const user = await prisma.user.findUnique({ where: { id: payload.id } })
-    if (user === null) {
-      return res
-        .status(401)
-        .setHeader('WWW-Authenticate', 'Bearer')
-        .send({ message: 'Invalid token.' })
-    }
-
-    res.json(tweets)
-  })
-
-  // if user is not authenticated -> throw an error
-  // else retreive tweets from the database
-  // send them to the user
+  const { password: _, ...userWithoutPassword } = userData
+  res.send(userWithoutPassword)
 })
 
 const PORT = process.env.PORT ?? 5000

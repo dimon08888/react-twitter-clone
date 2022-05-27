@@ -1,11 +1,15 @@
 import React, { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useDocumentTitle } from '../app/utils'
+import { useUser } from '../providers/user-provider'
 
 //
 
 export default function Login() {
   useDocumentTitle('Log in')
+  const { user, setUser } = useUser()
+  const [searchParams] = useSearchParams()
+
   const navigate = useNavigate()
 
   const [username, setUsername] = useState('')
@@ -25,9 +29,19 @@ export default function Login() {
           setError(data.message)
         } else {
           window.localStorage.setItem('accessToken', data.accessToken)
-          navigate('/home')
+          setUser(data.user)
+          const next = searchParams.get('next')
+          navigate(next ?? '/home')
         }
       })
+  }
+
+  if (user === undefined) {
+    return null
+  }
+
+  if (user !== null) {
+    return <Navigate to='/home' />
   }
 
   return (
