@@ -1,7 +1,14 @@
 import React from 'react'
-import { Outlet, Link } from 'react-router-dom'
+import { Outlet, Link, useNavigate } from 'react-router-dom'
 
-export default function layout() {
+export default function Layout() {
+  const navigate = useNavigate()
+
+  function handleLogout() {
+    window.localStorage.removeItem('accessToken')
+    navigate('/login')
+  }
+
   return (
     <div>
       <nav className='flex flex-col'>
@@ -10,6 +17,7 @@ export default function layout() {
         <Link to='/bookmarks'>Bookmarks</Link>
       </nav>
       <Outlet />
+      <button onClick={handleLogout}>Log out</button>
     </div>
   )
 }
