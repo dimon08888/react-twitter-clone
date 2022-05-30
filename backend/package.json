@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon -r dotenv/config src/index.ts dotenv_config_path=.env.local",
+    "dev": "nodemon -r dotenv/config src/index.ts --files dotenv_config_path=.env.local",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

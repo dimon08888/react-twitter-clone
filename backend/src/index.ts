@@ -50,13 +50,27 @@ app.post('/login', async (req, res) => {
   return res.json({ accessToken: token, user: userWithoutPassword })
 })
 
-const tweets = [
-  { id: 1, text: 'Tweet 1' },
-  { id: 2, text: 'Tweet 2' },
-]
-
-app.get('/tweets', auth, (req, res) => {
+app.get('/tweets', auth, async (req, res) => {
+  const tweets = await prisma.tweet.findMany()
   res.json(tweets)
+})
+
+app.post('/tweets', auth, async (req, res) => {
+  const { text } = req.body
+  invariant(req.user !== undefined)
+
+  const tweet = await prisma.tweet.create({
+    data: { text, userId: req.user.id },
+  })
+
+  res.json(tweet)
+})
+
+app.delete('/tweets/:id', auth, async (req, res) => {
+  const { id } = req.params
+  console.log({ id })
+  await prisma.tweet.delete({ where: { id: Number(id) } })
+  res.status(204).send()
 })
 
 app.get('/users/:id', auth, async (req, res) => {

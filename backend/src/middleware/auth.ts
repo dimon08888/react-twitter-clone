@@ -48,6 +48,7 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
         .send({ message: 'Invalid token.' })
     }
 
+    req.user = user
     next()
   })
 }
