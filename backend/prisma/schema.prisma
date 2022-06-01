@@ -14,7 +14,8 @@ model User {
   image     String?
   bio       String   @default("")
   createdAt DateTime @default(now())
-  Tweet     Tweet[]
+  tweets    Tweet[]
+  likes     Like[]
 }
 
 model Tweet {
@@ -23,4 +24,14 @@ model Tweet {
   createdAt DateTime @default(now())
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
+  likes     Like[]
+}
+
+model Like {
+  userId  Int
+  tweetId Int
+  user    User  @relation(fields: [userId], references: [id])
+  tweet   Tweet @relation(fields: [tweetId], references: [id])
+
+  @@id([userId, tweetId])
 }

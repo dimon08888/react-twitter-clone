@@ -51,7 +51,7 @@ app.post('/login', async (req, res) => {
 })
 
 app.get('/tweets', auth, async (req, res) => {
-  const tweets = await prisma.tweet.findMany()
+  const tweets = await prisma.tweet.findMany({ include: { likes: true } })
   res.json(tweets)
 })
 
@@ -61,6 +61,20 @@ app.post('/tweets', auth, async (req, res) => {
 
   const tweet = await prisma.tweet.create({
     data: { text, userId: req.user.id },
+  })
+
+  res.json(tweet)
+})
+
+app.post('/tweets/:id/like', auth, async (req, res) => {
+  const { id } = req.params
+  invariant(req.user !== undefined)
+
+  // check if user liked before
+
+  const tweet = await prisma.tweet.update({
+    data: { likes: { create: { userId: req.user.id } } },
+    where: { id: Number(id) },
   })
 
   res.json(tweet)

@@ -8,6 +8,12 @@ type Tweet = {
   text: string
   createdAt: string
   userId: number
+  likes: ReadonlyArray<Like>
+}
+
+type Like = {
+  userId: number
+  tweetId: number
 }
 
 export default function Home() {
@@ -70,6 +76,17 @@ export default function Home() {
     }
   }
 
+  async function handleLike(id: number) {
+    const response = await fetch(`http://localhost:5000/tweets/${id}/like`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + window.localStorage.getItem('accessToken'),
+      },
+    })
+    const data = await response.json()
+  }
+
   return (
     <div>
       <div>Home for {user.username}</div>
@@ -84,10 +101,19 @@ export default function Home() {
         </button>
       </form>
       <ul>
-        {tweets.map((tweet, i) => {
+        {tweets.map(tweet => {
+          const isLiked = tweet.likes.some(like => like.userId === user.id)
           return (
             <li key={tweet.id}>
               {tweet.text}
+              {isLiked ? (
+                <div>Liked: {tweet.likes.length}</div>
+              ) : (
+                <div>
+                  <button onClick={() => handleLike(tweet.id)}>Like</button>
+                  {tweet.likes.length}
+                </div>
+              )}
               {tweet.createdAt}
               <DropDownMenu tweet={tweet} handleDelete={handleDelete} />
             </li>
@@ -125,7 +151,7 @@ function DropDownMenu({
       {show && (
         <ul>
           <li>
-            <button>Pin</button>{' '}
+            <button>Pin</button>
           </li>
           <li>
             <button onClick={() => handleDelete(tweet.id)}>Delete</button>
