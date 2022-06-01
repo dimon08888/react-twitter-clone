@@ -68,7 +68,6 @@ app.post('/tweets', auth, async (req, res) => {
 
 app.delete('/tweets/:id', auth, async (req, res) => {
   const { id } = req.params
-  console.log({ id })
   await prisma.tweet.delete({ where: { id: Number(id) } })
   res.status(204).send()
 })

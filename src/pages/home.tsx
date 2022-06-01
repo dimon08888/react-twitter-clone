@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useLocation, Navigate } from 'react-router-dom'
 import { useDocumentTitle } from '../app/utils'
 import { useUser } from '../providers/user-provider'
@@ -84,14 +84,54 @@ export default function Home() {
         </button>
       </form>
       <ul>
-        {tweets.map((tweet, i) => (
-          <li key={i}>
-            {tweet.text}
-            {tweet.createdAt}
+        {tweets.map((tweet, i) => {
+          return (
+            <li key={tweet.id}>
+              {tweet.text}
+              {tweet.createdAt}
+              <DropDownMenu tweet={tweet} handleDelete={handleDelete} />
+            </li>
+          )
+        })}
+      </ul>
+    </div>
+  )
+}
+
+function DropDownMenu({
+  tweet,
+  handleDelete,
+}: {
+  tweet: Tweet
+  handleDelete: (id: Tweet['id']) => void
+}) {
+  const [show, setShow] = useState(false)
+  const dropMenuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (!dropMenuRef.current?.contains(e.target as HTMLElement)) {
+        setShow(false)
+      }
+    }
+
+    window.addEventListener('click', handleClickOutside)
+    return () => window.removeEventListener('click', handleClickOutside)
+  })
+
+  return (
+    <div ref={dropMenuRef} className='inline-block'>
+      <button onClick={() => setShow(!show)}>...</button>
+      {show && (
+        <ul>
+          <li>
+            <button>Pin</button>{' '}
+          </li>
+          <li>
             <button onClick={() => handleDelete(tweet.id)}>Delete</button>
           </li>
-        ))}
-      </ul>
+        </ul>
+      )}
     </div>
   )
 }

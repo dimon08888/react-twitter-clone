@@ -16,24 +16,27 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    fetch('http://localhost:5000/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.message) {
-          setError(data.message)
-        } else {
-          window.localStorage.setItem('accessToken', data.accessToken)
-          setUser(data.user)
-          const next = searchParams.get('next')
-          navigate(next ?? '/home')
-        }
+    try {
+      const response = await fetch('http://localhost:5000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
       })
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.message)
+      }
+      window.localStorage.setItem('accessToken', data.accessToken)
+      setUser(data.user)
+      const next = searchParams.get('next')
+      navigate(next ?? '/home')
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message)
+      }
+    }
   }
 
   if (user === undefined) {

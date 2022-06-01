@@ -11,23 +11,26 @@ export default function Signup() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [passwordRepeat, setPasswordRepeat] = useState('')
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    fetch('http://localhost:5000/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password }),
-    })
-      .then(response => response.json().then(json => ({ response, json })))
-      .then(({ response, json }) => {
-        if (response.status === 400) {
-          setError(json.message)
-        } else {
-          navigate('/login')
-        }
+    try {
+      const response = await fetch('http://localhost:5000/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
       })
+      const json = await response.json()
+      if (!response.ok) {
+        throw new Error(json.message)
+      }
+      navigate('/login')
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message)
+      }
+    }
   }
 
   if (user === undefined) {

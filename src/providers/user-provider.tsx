@@ -50,6 +50,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
           setUser(json)
         }
       })
+      .catch(err => setUser(null))
   }, [])
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>
